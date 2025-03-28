@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Card Collector</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Modern Color Palette */
+        :root {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: #f4f5f7;
+            --card-bg: #ffffff;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --accent-primary: #6b46c1;
+            --accent-secondary: #805ad5;
+            --btn-hover: #553c9a;
+            --shadow-elegant: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --error-color: #e53e3e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Smooth Scrollbar */
+        body::-webkit-scrollbar {
+            width: 10px;
+        }
+        body::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        body::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 5px;
+        }
+
+        /* Navigation with Glassmorphism Effect */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav button {
+            background: transparent;
+            border: 2px solid var(--card-bg);
+            color: var(--card-bg);
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            outline: none;
+        }
+
+        .nav button:hover {
+            background: var(--card-bg);
+            color: var(--accent-primary);
+            transform: translateY(-3px);
+        }
+
+        /* Container Styles */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            background: var(--bg-secondary);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow-elegant);
+        }
+
+        /* Authentication Section */
+        #authSection {
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #authSection input {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border: 2px solid var(--accent-secondary);
+            border-radius: 30px;
+            background: rgba(255,255,255,0.8);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #authSection input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        #authSection p {
+            color: var(--accent-primary);
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        #authSection p:hover {
+            text-decoration: underline;
+        }
+
+        /* Error message */
+        .error-message {
+            color: var(--error-color);
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Card Grid Styles */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow-elegant);
+            transform: scale(1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .card img {
+            width: 100%;
+            height: 250px;
+            object-fit: contain;
+            background: var(--bg-secondary);
+        }
+
+        .card h3 {
+            padding: 10px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .card p {
+            text-align: center;
+            color: var(--text-secondary);
+            padding-bottom: 10px;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 30px;
+            background: var(--accent-primary);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--btn-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-add {
+            background: var(--accent-primary);
+        }
+
+        .btn-remove {
+            background: #e53e3e;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Custom Cursor */
+        body {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3C/svg%3E"), auto;
+        }
+
+        button, a, .btn, [onclick] {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%236b46c1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='16'/%3E%3Cline x1='8' y1='12' x2='16' y2='12'/%3E%3C/svg%3E"), pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav hidden" id="navBar">
+        <button onclick="CardCollector.showSection('allCards')">All Cards</button>
+        <button onclick="CardCollector.showSection('myCollection')">My Collection</button>
+        <button onclick="CardCollector.logout()">Logout</button>
+    </div>
+    
+    <div class="container" id="authSection">
+        <h2 id="authTitle">Login</h2>
+        <div id="errorMessage" class="error-message hidden"></div>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button class="btn" onclick="CardCollector.handleAuth()">Submit</button>
+        <p id="toggleAuthText" onclick="CardCollector.toggleAuth()">Don't have an account? Sign up</p>
+    </div>
+    
+    <div class="container hidden" id="allCards">
+        <h2>Available Pokémon Cards</h2>
+        <div class="card-grid" id="cardList"></div>
+    </div>
+    
+    <div class="container hidden" id="myCollection">
+        <h2>My Collection</h2>
+        <div class="card-grid" id="collectionList"></div>
+    </div>
+    
+    <script>
+        const CardCollector = (() => {
+            // Mock database for users and collections
+            const users = JSON.parse(localStorage.getItem('pokemonUsers')) || [];
+            let currentUser = null;
+            let isLoginMode = true;
+            
+            // Sample Pokémon cards data
+            const pokemonCards = [
+                { id: 1, name: 'Pikachu', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png', type: 'Electric' },
+                { id: 2, name: 'Charizard', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png', type: 'Fire/Flying' },
+                { id: 3, name: 'Bulbasaur', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png', type: 'Grass/Poison' },
+                { id: 4, name: 'Squirtle', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png', type: 'Water' },
+                { id: 5, name: 'Jigglypuff', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/39.png', type: 'Normal/Fairy' },
+                { id: 6, name: 'Mewtwo', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png', type: 'Psychic' },
+                { id: 7, name: 'Eevee', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png', type: 'Normal' },
+                { id: 8, name: 'Snorlax', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/143.png', type: 'Normal' }
+            ];
+            
+            // Initialize the app
+            const init = () => {
+                // Check if user is already logged in
+                const loggedInUser = localStorage.getItem('pokemonCurrentUser');
+                if (loggedInUser) {
+                    currentUser = JSON.parse(loggedInUser);
+                    showSection('allCards');
+                    document.getElementById('navBar').classList.remove('hidden');
+                    document.getElementById('authSection').classList.add('hidden');
+                    loadCards();
+                } else {
+                    showSection('authSection');
+                }
+            };
+            
+            // Toggle between login and signup
+            const toggleAuth = () => {
+                isLoginMode = !isLoginMode;
+                const authTitle = document.getElementById('authTitle');
+                const toggleAuthText = document.getElementById('toggleAuthText');
+                const submitButton = document.querySelector('#authSection .btn');
+                
+                if (isLoginMode) {
+                    authTitle.textContent = 'Login';
+                    toggleAuthText.textContent = "Don't have an account? Sign up";
+                    submitButton.textContent = 'Login';
+                } else {
+                    authTitle.textContent = 'Sign Up';
+                    toggleAuthText.textContent = "Already have an account? Login";
+                    submitButton.textContent = 'Sign Up';
+                }
+                
+                // Clear any previous error messages
+                showError('');
+            };
+            
+            // Handle authentication (login/signup)
+            const handleAuth = () => {
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+                
+                if (!username || !password) {
+                    showError('Please enter both username and password');
+                    return;
+                }
+                
+                if (isLoginMode) {
+                    loginUser(username, password);
+                } else {
+                    registerUser(username, password);
+                }
+            };
+            
+            // Login user
+            const loginUser = (username, password) => {
+                const user = users.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    currentUser = user;
+                    localStorage.setItem('pokemonCurrentUser', JSON.stringify(user));
+                    showSection('allCards');
+                    document.getElementById('navBar').classList.remove('hidden');
+                    loadCards();
+                } else {
+                    showError('Invalid username or password');
+                }
+            };
+            
+            // Register new user
+            const registerUser = (username, password) => {
+                // Check if username already exists
+                const userExists = users.some(u => u.username === username);
+                
+                if (userExists) {
+                    showError('Username already exists');
+                    return;
+                }
+                
+                // Create new user
+                const newUser = {
+                    id: Date.now(),
+                    username,
+                    password,
+                    collection: []
+                };
+                
+                users.push(newUser);
+                localStorage.setItem('pokemonUsers', JSON.stringify(users));
+                
+                // Auto-login the new user
+                loginUser(username, password);
+                showError(''); // Clear any errors
+            };
+            
+            // Show error message
+            const showError = (message) => {
+                const errorElement = document.getElementById('errorMessage');
+                if (message) {
+                    errorElement.textContent = message;
+                    errorElement.classList.remove('hidden');
+                } else {
+                    errorElement.classList.add('hidden');
+                }
+            };
+            
+            // Logout user
+            const logout = () => {
+                currentUser = null;
+                localStorage.removeItem('pokemonCurrentUser');
+                document.getElementById('navBar').classList.add('hidden');
+                showSection('authSection');
+                // Reset auth form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                isLoginMode = true;
+                toggleAuth(); // Reset to login view
+            };
+            
+            // Show a specific section
+            const showSection = (sectionId) => {
+                document.querySelectorAll('.container').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                document.getElementById(sectionId).classList.remove('hidden');
+                
+                if (sectionId === 'myCollection') {
+                    loadCollection();
+                }
+            };
+            
+            // Load all available cards
+            const loadCards = () => {
+                const cardList = document.getElementById('cardList');
+                cardList.innerHTML = '';
+                
+                pokemonCards.forEach(card => {
+                    const isInCollection = currentUser.collection.some(c => c.id === card.id);
+                    
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card';
+                    cardElement.innerHTML = `
+                        <img src="${card.image}" alt="${card.name}">
+                        <h3>${card.name}</h3>
+                        <p>Type: ${card.type}</p>
+                        <button class="btn ${isInCollection ? 'btn-remove' : 'btn-add'}" 
+                                onclick="CardCollector.toggleCardInCollection(${card.id})">
+                            ${isInCollection ? 'Remove from Collection' : 'Add to Collection'}
+                        </button>
+                    `;
+                    cardList.appendChild(cardElement);
+                });
+            };
+            
+            // Load user's collection
+            const loadCollection = () => {
+                const collectionList = document.getElementById('collectionList');
+                collectionList.innerHTML = '';
+                
+                if (currentUser.collection.length === 0) {
+                    collectionList.innerHTML = '<p>Your collection is empty. Add some cards!</p>';
+                    return;
+                }
+                
+                currentUser.collection.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card';
+                    cardElement.innerHTML = `
+                        <img src="${card.image}" alt="${card.name}">
+                        <h3>${card.name}</h3>
+                        <p>Type: ${card.type}</p>
+                        <button class="btn btn-remove" 
+                                onclick="CardCollector.toggleCardInCollection(${card.id})">
+                            Remove from Collection
+                        </button>
+                    `;
+                    collectionList.appendChild(cardElement);
+                });
+            };
+            
+            // Toggle card in collection
+            const toggleCardInCollection = (cardId) => {
+                const card = pokemonCards.find(c => c.id === cardId);
+                const cardIndex = currentUser.collection.findIndex(c => c.id === cardId);
+                
+                if (cardIndex === -1) {
+                    // Add to collection
+                    currentUser.collection.push(card);
+                } else {
+                    // Remove from collection
+                    currentUser.collection.splice(cardIndex, 1);
+                }
+                
+                // Update user data
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex] = currentUser;
+                    localStorage.setItem('pokemonUsers', JSON.stringify(users));
+                    localStorage.setItem('pokemonCurrentUser', JSON.stringify(currentUser));
+                }
+                
+                // Refresh views
+                loadCards();
+                if (document.getElementById('myCollection').classList.contains('hidden') === false) {
+                    loadCollection();
+                }
+            };
+            
+            // Public methods
+            return {
+                init,
+                toggleAuth,
+                handleAuth,
+                logout,
+                showSection,
+                toggleCardInCollection
+            };
+        })();
+
+        // Initialize the app when the page loads
+        window.onload = CardCollector.init;
+    </script>
+</body>
+</html>
